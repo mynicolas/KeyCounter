@@ -3,7 +3,7 @@
 import MySQLdb
 import datetime
 from flask import Flask, request
-from flask.ext.restful import reqparse, Resource, Api
+from flask.ext.restful import Resource, Api
 from gevent.wsgi import WSGIServer
 
 
@@ -71,8 +71,6 @@ class KeyCounter(Resource):
         return {"result": "ok", "message": "", "data": {"username": username, 'date': date, 'counts': counts}}
 
 
-
-
 class User(Resource):
     def post(self):
         user = request.get_json(force=True)
@@ -124,7 +122,7 @@ class User(Resource):
 api.add_resource(Index, '/')
 api.add_resource(User, '/user')
 api.add_resource(KeyCounter, '/data', '/data/username/<username>/date/<date>')
-# api.add_resource(KeyCounter)
+
 if __name__ == '__main__':
     server = WSGIServer(("0.0.0.0", 5000), app)
     server.serve_forever()
