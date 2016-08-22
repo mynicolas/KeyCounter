@@ -12,6 +12,33 @@ import win32ui
 
 from dialogs import slider
 
+import requests
+import threading
+import time
+
+
+KEY_COUNT = 0
+USER_INFO = {
+    "username": "user1",
+    "password": "user1"
+}
+
+
+class ApiRequest(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        global KEY_COUNT
+        while True:
+            self.send_data(KEY_COUNT)
+            time.sleep(10)
+
+    # send key count
+    def send_data(self, key_count):
+        USER_INFO.update({'count': key_count})
+        requests.post('http://127.0.0.1:5000/data', json=USER_INFO)
+
 
 class KeyCounter(object):
 
@@ -43,7 +70,9 @@ class KeyCounter(object):
 
     def hook_keyboard(self):
         def Key_handler(evt):
+            global KEY_COUNT
             self.key_count += 1
+            KEY_COUNT += 1
             if self.HWND is not None:
                 win32gui.RedrawWindow(
                     self.HWND, None, None, win32con.RDW_INVALIDATE
@@ -284,6 +313,7 @@ class KeyCounter(object):
         self.hook_keyboard()
         self.create_window()
         self.update_tray_icon()
+        ApiRequest().start()
 
         while 1:
             try:
