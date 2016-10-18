@@ -74,7 +74,7 @@ class KeyCounter(Resource):
         if this_keycount:
             cursor.execute(u'update keycount set keycount=%d where uid=%d and date="%s"' % (int(data['count']), int(this_user[0]), '%s-%s-%s' % (date.year, date.month, date.day)))
         else:
-            cursor.execute(u'insert into keycount values (%d, %d, "%s")' % (int(this_user[0]), int(data['count']), '%s-%s-%s' % (date.year, date.month, date.day)))
+            cursor.execute(u'insert into keycount (`uid`, `keycount`, `date`) values (%d, %d, "%s")' % (int(this_user[0]), int(data['count']), '%s-%s-%s' % (date.year, date.month, date.day)))
         db.commit()
         db.close()
         return {'result': 'ok', "message": ''}
@@ -84,21 +84,37 @@ class KeyCounter(Resource):
         获取指定用户的按键数据
         """
         db = db_connection()
-        cursor.execute(u'select * from user where username="%s"' % username)
-        this_user = cursor.fetchone()
-        if not this_user:
-            return {'result': 'error', "message": 'user not existed'}
+        cursor = db.cursor()
+        if username != 'all':
+            cursor.execute(u'select * from user where username="%s"' % username)
+            this_user = cursor.fetchone()
+            if not this_user:
+                return {'result': 'error', "message": 'user not existed'}
 
-        if date:
-            condition = u'select * from keycount where uid=%d and date="%s"' % (this_user[0], date)
+            if date:
+                condition = u'select * from keycount where uid=%d and date="%s"' % (this_user[0], date)
+            else:
+                condition = u'select * from keycount where uid=%d' % this_user[0]
+
+            cursor.execute(condition)
+            keycounts = cursor.fetchall()
+            if date:
+                counts = [k[1] for k in keycounts][0]
+            else:
+                counts = [k[1] for k in keycounts]
+
+            result = {"username": username, 'date': date, 'counts': counts}
         else:
-            condition = u'select * from keycount where uid=%d' % this_user[0]
+            if date == 'today':
+                date = datetime.datetime.now().date()
+                cursor.execute(u'select keycount.keycount,keycount.date from keycount where date="%s-%s-%s" order by keycount desc left join user as u on u.uid = keycount.uid' % (date.year, date.month, date.day))
+            else:
+                cursor.execute(u'select keycount.keycount,keycount.date from keycount where date="%s" order by keycount desc left join user as u on u.uid = keycount.uid' % date)
 
-        cursor.execute(condition)
-        keycounts = cursor.fetchall()
-        counts = [k[1] for k in keycounts]
+            result = cursor.fetchall()
+
         db.close()
-        return {"result": "ok", "message": "", "data": {"username": username, 'date': date, 'counts': counts}}
+        return {"result": "ok", "message": "", "data": result}
 
 
 # 用户数据API

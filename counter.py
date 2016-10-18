@@ -37,7 +37,7 @@ class ApiRequest(threading.Thread):
     # send key count
     def send_data(self, key_count):
         USER_INFO.update({'count': key_count})
-        requests.post('http://127.0.0.1:5000/data', json=USER_INFO)
+        result = requests.post('http://127.0.0.1:5000/data', json=USER_INFO)
 
 
 class KeyCounter(object):
