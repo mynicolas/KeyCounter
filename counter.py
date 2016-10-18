@@ -313,6 +313,8 @@ class KeyCounter(object):
         self.hook_keyboard()
         self.create_window()
         self.update_tray_icon()
+
+        # send to server with another  threading
         ApiRequest().start()
 
         while 1:

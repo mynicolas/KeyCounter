@@ -21,7 +21,6 @@
 				var self = this;
 				this.ws.onmessage = function (result) {
 					self.content = result.data.slice(4, result.data.length);
-					console.log(result.data);
 				};
 			},
 			contentChanged: function(){
