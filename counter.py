@@ -15,13 +15,15 @@ from dialogs import slider
 import requests
 import threading
 import time
+import os
 
+with open(os.path.expanduser('~') + '\\keycount.ini', 'r') as confile:
+    USER_INFO = {
+        "username": confile.readline().strip(),
+        "password": confile.readline().strip()
+    }
 
 KEY_COUNT = 0
-USER_INFO = {
-    "username": "user2",
-    "password": "user2"
-}
 
 
 class ApiRequest(threading.Thread):
