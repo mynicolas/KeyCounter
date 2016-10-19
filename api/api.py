@@ -29,7 +29,7 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "root",
     "passwd": "root",
-    "db": "ws",
+    "db": "keycount",
     "charset": "utf8"
 }
 
