@@ -14,12 +14,12 @@ IDC_EDIT_USERNAME = 2000
 IDC_EDIT_PASSWORD = 2001
 
 
-def ConfigDialogTemplate(title):
+def ConfigDialogTemplate():
     style = win32con.DS_SETFONT | win32con.DS_MODALFRAME | win32con.DS_FIXEDSYS | win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_CAPTION | win32con.WS_SYSMENU
     cs = win32con.WS_CHILD | win32con.WS_VISIBLE
     listCs = cs | win32con.LBS_NOINTEGRALHEIGHT | win32con.WS_VSCROLL | win32con.WS_TABSTOP
 
-    dlg = [[title, (0, 0, 200, 75), style, None, (8, "MS Sans Serif")], ]
+    dlg = [[u'输入用户名密码', (0, 0, 200, 75), style, None, (8, "MS Sans Serif")], ]
     s = cs | win32con.CBS_DROPDOWN | win32con.WS_VSCROLL | win32con.WS_TABSTOP
 
     dlg.append([130, u"用户名:", -1, (30, 10, 50, 10), cs | win32con.SS_LEFT])
@@ -38,23 +38,19 @@ def ConfigDialogTemplate(title):
 
 class ConfigDialog(dialog.Dialog):
     def __init__(self):
-        dialog.Dialog.__init__(self, ConfigDialogTemplate(u'输入用户名密码'))
+        dialog.Dialog.__init__(self, ConfigDialogTemplate())
         self.DoModal()
 
     def OnInitDialog(self):
-        self.username = self.GetDlgItem(IDC_EDIT_USERNAME)
-        self.password = self.GetDlgItem(IDC_EDIT_PASSWORD)
+        self.username_control = self.GetDlgItem(IDC_EDIT_USERNAME)
+        self.password_control = self.GetDlgItem(IDC_EDIT_PASSWORD)
 
     def OnDestroy(self, msg):
-        del self.username
-        del self.password
+        del self.username_control
+        del self.password_control
 
     def OnOK(self):
-        print self.username.GetLine(), '\n', self.password.GetLine()
-
-    def destroy(self):
-        self.close()
-
-
-if __name__ == '__main__':
-    ConfigDialog()
+        if self.username_control.GetLine() and self.password_control.GetLine():
+            self.username = self.username_control.GetLine()
+            self.password = self.password_control.GetLine()
+            self._obj_.OnOK()

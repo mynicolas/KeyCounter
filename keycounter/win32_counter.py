@@ -318,6 +318,12 @@ class KeyCounter(BaseKeyCounter):
         raise SystemExit(0)
 
     def start(self):
+        import os
+        if not os.path.isfile(os.path.expanduser('~') + '\\keycount.ini'):
+            from config_dialog import ConfigDialog
+            user_info = ConfigDialog()
+            with open(os.path.expanduser('~') + '\\keycount.ini', 'w') as confile:
+                confile.writelines([user_info.username + '\n', user_info.password])
         if self.instance_running():
             try:
                 self.stop()
