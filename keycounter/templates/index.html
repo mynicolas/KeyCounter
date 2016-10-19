@@ -6,8 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         <meta name="mobile-web-app-capable" content="yes">
         <!-- <link rel="shortcut icon" href="favicon.ico"> -->
-        <script src="bower_components/vue/dist/vue.js"></script>
-        <script src="bower_components/vue-resource/dist/vue-resource.js"></script>
+        <script src="{{ url_for('static', filename='bower_components/vue/dist/vue.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/vue-resource/dist/vue-resource.js') }}"></script>
         <style>
             body {
                 font-family: sans-serif;
@@ -23,17 +23,19 @@
     <body>
         <div id="table">
             <h3>{{header}}</h3>
-            <table>
+            <table border="1">
                 <thead>
                     <td>Username</td>
                     <td>KeyCount</td>
+                    <td>Date</td>
                     <td>Order</td>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                    <tr v-for="user in users">
+                        <td>{{user.username}}</td>
+                        <td>{{user.keycount}}</td>
+                        <td>{{user.date}}</td>
+                        <td>{{user.order}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -44,12 +46,15 @@
                 el: '#table',
                 data: {
                     header: 'Key Count Order.',
-                    data: {}
+                    users: {}
                 },
                 created: function() {
-                    this.$http.get('http://127.0.0.1:5000/data/username/all/date/today').then((response) => {
-                        this.data = response.data;
-                    }, (response) => {});
+                    var self = this;
+                    setInterval(function(){
+                        self.$http.get('http://127.0.0.1:5000/data/username/all/date/today').then((response) => {
+                            self.users = response.data.data;
+                        });
+                    }, 2000);
                 }
             });
         </script>

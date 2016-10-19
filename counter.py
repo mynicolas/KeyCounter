@@ -19,8 +19,8 @@ import time
 
 KEY_COUNT = 0
 USER_INFO = {
-    "username": "user1",
-    "password": "user1"
+    "username": "user2",
+    "password": "user2"
 }
 
 
@@ -32,7 +32,7 @@ class ApiRequest(threading.Thread):
         global KEY_COUNT
         while True:
             self.send_data(KEY_COUNT)
-            time.sleep(10)
+            time.sleep(2)
 
     # send key count
     def send_data(self, key_count):

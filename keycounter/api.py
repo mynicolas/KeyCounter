@@ -15,13 +15,15 @@
 #
 import MySQLdb
 import datetime
-from flask import Flask, request
+from flask import Flask, request, render_template, url_for
 from flask.ext.restful import Resource, Api
 from gevent.wsgi import WSGIServer
 
 
 app = Flask(__name__)
 api = Api(app)
+app.jinja_env.variable_start_string = '{{ '
+app.jinja_env.variable_end_string = ' }}'
 
 DB_CONFIG = {
     "host": "localhost",
@@ -43,9 +45,9 @@ def db_connection():
 
 
 # API首页
-class Index(Resource):
-    def get(self):
-        return {"version": "v1"}
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 # 按键数据API
@@ -107,11 +109,16 @@ class KeyCounter(Resource):
         else:
             if date == 'today':
                 date = datetime.datetime.now().date()
-                cursor.execute(u'select keycount.keycount,keycount.date from keycount where date="%s-%s-%s" order by keycount desc left join user as u on u.uid = keycount.uid' % (date.year, date.month, date.day))
+                cursor.execute(u'select user.username,keycount.keycount,keycount.date from keycount left join user on user.uid = keycount.uid where keycount.date="%s-%s-%s" order by keycount.keycount desc' % (date.year, date.month, date.day))
             else:
-                cursor.execute(u'select keycount.keycount,keycount.date from keycount where date="%s" order by keycount desc left join user as u on u.uid = keycount.uid' % date)
+                cursor.execute(u'select user.username,keycount.keycount,keycount.date from keycount left join user on user.uid = keycount.uid where keycount.date="%s" order by keycount.keycount desc' % date)
 
-            result = cursor.fetchall()
+            users = cursor.fetchall()
+            result = []
+            order = 1
+            for user in users:
+                result.append({'order': order, 'username': user[0], 'keycount': user[1], 'date': '%s-%s-%s' % (user[2].year, user[2].month, user[2].day)})
+                order += 1
 
         db.close()
         return {"result": "ok", "message": "", "data": result}
@@ -170,7 +177,6 @@ class User(Resource):
         return {'result': 'ok', "message": ""}
 
 
-api.add_resource(Index, '/')
 api.add_resource(User, '/user')
 api.add_resource(KeyCounter, '/data', '/data/username/<username>/date/<date>')
 
