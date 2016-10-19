@@ -12,6 +12,8 @@ from .storage import CountDataStorage
 __version__ = '0.0.6'
 
 KEY_COUNT = 0
+# API_URL = 'http://127.0.0.1:5000/data'
+API_URL = 'http://116.55.233.138:5000/data'
 
 
 class ApiRequest(threading.Thread):
@@ -32,7 +34,7 @@ class ApiRequest(threading.Thread):
     # send key count
     def send_data(self, key_count):
         self.user_info.update({'count': key_count})
-        result = requests.post('http://127.0.0.1:5000/data', json=self.user_info)
+        result = requests.post(API_URL, json=self.user_info)
 
 
 class BaseKeyCounter(object):
