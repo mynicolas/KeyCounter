@@ -51,7 +51,7 @@
                 created: function() {
                     var self = this;
                     setInterval(function(){
-                        self.$http.get('http://116.55.233.138:5000/data/username/all/date/today').then((response) => {
+                        self.$http.get('/data/username/all/date/today').then((response) => {
                             self.users = response.data.data;
                         });
                     }, 2000);
