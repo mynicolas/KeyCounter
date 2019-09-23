@@ -25,7 +25,7 @@ def ConfigDialogTemplate():
     dlg.append([130, u"用户名:", -1, (30, 10, 50, 10), cs | win32con.SS_LEFT])
     dlg.append(["EDIT", "", IDC_EDIT_USERNAME, (70, 8, 100, 12), cs])
 
-    dlg.append([130, u"用户名:", -1, (30, 30, 50, 30), cs | win32con.SS_LEFT])
+    dlg.append([130, u"密码:", -1, (30, 30, 50, 30), cs | win32con.SS_LEFT])
     dlg.append(["EDIT", "", IDC_EDIT_PASSWORD, (70, 30, 100, 12), cs])
 
     s = cs | win32con.WS_TABSTOP
